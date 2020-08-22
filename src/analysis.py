@@ -152,7 +152,7 @@ def main(train_X, test_X, train_y, test_y, conf1, conf2, roc_path):
             {'n_neighbors': [2, 5, 10, 15, 20, 50, 100],
             'algorithm': ['auto', 'brute']}]
 
-    # Run for loop to best parameters for each model
+    # Run for loop to find best parameters for each model
     # Scoring = recall to reduce false positives
     for i in range(len(estimators)):
         search = GridSearchCV(estimator=estimators[i], 
@@ -211,91 +211,6 @@ def main(train_X, test_X, train_y, test_y, conf1, conf2, roc_path):
     questions_valid_df = X_valid[questions]
 
     questions_test_df = X_test[questions]
-
-
-
-    # Attribution: Varada Kolhatkar
-
-    class ForwardSelection:
-        def __init__(self, 
-                    model, 
-                    min_features=None, 
-                    max_features=None, 
-                    scoring=None, 
-                    cv=None):
-            """
-            Initialize a Forward selection model
-            """
-            self.max_features = max_features
-            if min_features is None:
-                self.min_features = 1
-            else:
-                self.min_features = min_features
-
-            self.model = model
-            self.scoring = scoring
-            self.cv = cv
-            self.ftr_ = []
-            return
-        
-        def fit(self, X, y):
-            """
-            Fit a forward selection model        
-            """
-            
-            error = np.inf
-            best = None
-            feature_index = list(range(0, (X.shape[1])))
-            errors = []
-            
-            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=514)
-
-            X_temp = X_train
-
-            while error > 0.0:
-                if best is not None:
-                    if best not in feature_index:
-                        del feature_index[-2]
-                        break
-                    feature_index.remove(best)
-
-                for i in feature_index:
-                    self.model.fit(X_temp[:, self.ftr_ + [i]], y_train)
-                    temp_error = 1-np.mean(cross_val_score(self.model, X[:, self.ftr_ + [i]], y, scoring='f1'))
-
-                    if temp_error < error:
-                        error = temp_error
-                        best = i
-
-                errors.append(round(error, 3))
-
-                if len(errors) > 2:
-                    if errors[-1] >= errors[-2]:
-                        break
-
-                if self.max_features is not None:
-                    if len(errors) > self.max_features:
-                        break
-
-                self.ftr_.append(best)
-
-
-        def transform(self, X, y=None):
-            """
-            Transform a test set        
-            """
-            return X[:, self.ftr_]
-        
-
-    fs = ForwardSelection(DecisionTreeClassifier(), max_features=None)
-
-    fs.fit(questions_train_df.to_numpy(), y_train)
-
-    fs.ftr_
-
-    # No single one question is better than any other one question so forward selection won't work
-    # Or it just won't work with a decision tree
-
 
     rfe =RFE(DecisionTreeClassifier(), n_features_to_select=5)
 

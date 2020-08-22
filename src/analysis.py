@@ -193,44 +193,6 @@ def main(train_X, test_X, train_y, test_y, conf1, conf2, roc_path):
 
     #print(classification_report(y_test, dt.predict(X_test)))
 
-    ## Subset just the questions:
-
-    questions = ['A1_Score',
-        'A2_Score',
-        'A3_Score',
-        'A4_Score',
-        'A5_Score',
-        'A6_Score',
-        'A7_Score',
-        'A8_Score',
-        'A9_Score',
-        'A10_Score']
-
-    questions_train_df = X_train[questions]
-
-    questions_valid_df = X_valid[questions]
-
-    questions_test_df = X_test[questions]
-
-    rfe =RFE(DecisionTreeClassifier(), n_features_to_select=5)
-
-    rfe.fit(questions_train_df, y_train)
-
-    # The top 5 questions:
-
-    top_five = np.where(rfe.ranking_ == 1)[0]
-
-    X_train_best_5 = questions_train_df.to_numpy()[:,top_five]
-    X_test_best_5 = questions_test_df.to_numpy()[:,top_five]
-    X_valid_best_5 = questions_valid_df.to_numpy()[:,top_five]
-
-    dt2 = DecisionTreeClassifier()
-
-    dt2.fit(X_train_best_5, y_train)
-
-    pd.DataFrame(confusion_matrix(y_valid, dt2.predict(X_valid_best_5)))
-
-    # Using just the top 5 questions gets a much worse result than using all the features
 
 
     # Try all questions:

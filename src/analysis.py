@@ -1,25 +1,7 @@
-# analysis.py : take train/test csvs and fit a Decision tree model. Output ROC curve and confusion matrices.
-# author: Matthew Connell, Thomas Pin and Tejas Phaterpekar
-# date: 2020-01-22
+# analysis.py : take train/test csvs and fit a Decision tree model.
+# author: Matthew Connell
+# date: August 2020
 
-"""Import .csv in data folder to be split and analyzed by machine learning models. Outputs 2 .csv files which are confusion matrices. Outputs ROC chart with final model.
-
-Usage: analysis.py --train_X=<train> --test_X=<test> --train_y=<train_y> --test_y=<test_y>  --conf1=<conf1> --conf2=<conf2> --roc_path=<roc_path>
-
-Options:
---train_X=<train>                 path for the X-train set
---test_X=<test>                   path for the X-test set
---train_y=<train>                 path for the y-train set
---test_y=<test>                   path for the y-test set
---conf1=<conf1>                 path for the first confusion matrix
---conf2=<conf2>                 path for the second confusion matrix
---roc_path=<roc_path>           path for the roc chart matrix
-"""
-
-### In the terminal, in your root directory for the project, type:
-### python src/analysis.py --train_X=data/clean-data/Xtrain-clean-autism-screening.csv --test_X=data/clean-data/Xtest-clean-autism-screening.csv --train_y=data/clean-data/ytrain-clean-autism-screening.csv --test_y=data/clean-data/ytest-clean-autism-screening.csv --conf1=data/conf1 --conf2=data/conf2 --roc_path=img/ROC.png
-
-from docopt import docopt
 import pandas as pd
 import numpy as np
 
@@ -29,10 +11,6 @@ from sklearn.compose import ColumnTransformer
 
 # Models
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.linear_model import LogisticRegression, LinearRegression
-from sklearn.svm import SVC
-from sklearn.neighbors import KNeighborsClassifier
 
 # Metrics
 from sklearn.metrics import mean_squared_error, confusion_matrix, classification_report, roc_curve
@@ -41,17 +19,9 @@ from sklearn.metrics import mean_squared_error, confusion_matrix, classification
 from sklearn.model_selection import GridSearchCV, train_test_split, cross_val_score
 from sklearn.pipeline import Pipeline
 
-# Feature selection
-from sklearn.feature_selection import RFE
-
-# Plotting
-import altair as alt
-
 # Suppress warnings
 import warnings
 from sklearn.exceptions import FitFailedWarning
-
-opt = docopt(__doc__) 
 
 def main(train_X, test_X, train_y, test_y, conf1, conf2, roc_path):
 
@@ -129,11 +99,7 @@ def main(train_X, test_X, train_y, test_y, conf1, conf2, roc_path):
     ## Trying Gridsearch on different models to find best
 
     ## Initialize models
-    # lr = LogisticRegression()
-    dt = DecisionTreeClassifier(random_state=414)
-    rf = RandomForestClassifier(random_state=414)
-    svm = SVC(random_state=414)
-    knn = KNeighborsClassifier()
+    dt = DecisionTreeClassifier(random_state=1)
 
     # Make list for models and a list to store their values
     estimators = [dt, rf, svm, knn]
@@ -141,8 +107,7 @@ def main(train_X, test_X, train_y, test_y, conf1, conf2, roc_path):
     best_precision_scores = []
 
     # Make list of dictionaries for parameters
-    params = [#{'C':[0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000],
-            #'penalty': ['l1', 'l2']},
+    params = [
             {'max_depth': [1, 5, 10, 15, 20, 25, None],
             'max_features': [3, 5, 10, 15, 20, 50, None]},
             {'min_impurity_decrease': [0, 0.25, 0.5],
@@ -150,7 +115,8 @@ def main(train_X, test_X, train_y, test_y, conf1, conf2, roc_path):
             {'C':[0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000],
             'gamma':[0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1, 1, 10, 100]},
             {'n_neighbors': [2, 5, 10, 15, 20, 50, 100],
-            'algorithm': ['auto', 'brute']}]
+            'algorithm': ['auto', 'brute']}
+            ]
 
     # Run for loop to find best parameters for each model
     # Scoring = recall to reduce false positives
@@ -159,7 +125,7 @@ def main(train_X, test_X, train_y, test_y, conf1, conf2, roc_path):
                             param_grid=params[i],
                             cv = 10,
                             n_jobs=-1,
-                            scoring='recall')
+                            scoring='precision')
         
         search_object = search.fit(X_train, y_train)
         
@@ -175,9 +141,6 @@ def main(train_X, test_X, train_y, test_y, conf1, conf2, roc_path):
 
     dt = DecisionTreeClassifier(max_depth=15, max_features=50)
     dt.fit(X_train, y_train).score(X_train, y_train)
-
-
-    # It gets almost perfect on the train set
 
     dt.score(X_valid, y_valid)
 
@@ -232,4 +195,4 @@ def main(train_X, test_X, train_y, test_y, conf1, conf2, roc_path):
     chart.save(roc_path)
 
 if __name__ == "__main__":
-  main(opt["--train_X"], opt["--test_X"],opt["--train_y"], opt["--test_y"], opt["--conf1"], opt["--conf2"], opt["--roc_path"])
+  main()

@@ -4,12 +4,18 @@ import numpy as np
 # Preprocessing
 from sklearn.preprocessing import StandardScaler, OneHotEncoder, LabelEncoder, PolynomialFeatures
 from sklearn.compose import ColumnTransformer
+from sklearn.model_selection import train_test_split
 
-def main(train_X, test_X, train_y, test_y, conf1, conf2, roc_path):
+clean_path = '../data/clean-data/'
+
+train_X = clean_path + 'Xtrain.csv'
+train_y = clean_path + 'ytrain.csv'
+test_X = clean_path + 'Xtest.csv'
+test_y = clean_path + 'ytest.csv'
+
+def main(train_X, test_X, train_y, test_y):
 
     np.random.RandomState(414)
-
-    warnings.filterwarnings(action='ignore', category=FitFailedWarning)
 
     # import the already split datasets
     X_train = pd.read_csv(train_X, index_col=0)
@@ -79,4 +85,5 @@ def main(train_X, test_X, train_y, test_y, conf1, conf2, roc_path):
     y_valid = le.transform(y_valid.to_numpy().ravel())
 
 if __name__ == "__main__":
-    main()
+    
+    main(train_X, test_X, train_y, test_y)

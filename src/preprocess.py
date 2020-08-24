@@ -84,6 +84,8 @@ def main(train_X, test_X, train_y, test_y):
     y_test = le.transform(y_test.to_numpy().ravel())
     y_valid = le.transform(y_valid.to_numpy().ravel())
 
+    return X_train, X_test, X_valid, y_train, y_test, y_valid
+
 if __name__ == "__main__":
     
     main(train_X, test_X, train_y, test_y)

@@ -13,7 +13,7 @@ train_y = clean_path + 'ytrain.csv'
 test_X = clean_path + 'Xtest.csv'
 test_y = clean_path + 'ytest.csv'
 
-def main(train_X, test_X, train_y, test_y):
+def preprocess(train_X, test_X, train_y, test_y):
 
     np.random.RandomState(414)
 
@@ -86,6 +86,3 @@ def main(train_X, test_X, train_y, test_y):
 
     return X_train, X_test, X_valid, y_train, y_test, y_valid
 
-if __name__ == "__main__":
-    
-    main(train_X, test_X, train_y, test_y)

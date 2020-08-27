@@ -25,7 +25,7 @@ from sklearn.exceptions import FitFailedWarning
 
 from preprocess import *
 
-def main():
+def analysis():
 
     X_train, X_test, X_valid, y_train, y_test, y_valid = preprocess(train_X, test_X, train_y, test_y)
 
@@ -86,7 +86,3 @@ def main():
 
     final_matrix = conf_matrix.rename(columns={0:"Predicted no autism", 1:'Predicted autism'}, 
                 index={0:"Does not have autism", 1:'Has autism'})
-
-
-if __name__ == "__main__":
-  main()

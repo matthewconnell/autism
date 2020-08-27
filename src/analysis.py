@@ -40,13 +40,7 @@ def main():
     ## Make list of dictionaries for parameters
     params = [
             {'max_depth': [1, 5, 10, 15, 20, 25, None],
-            'max_features': [3, 5, 10, 15, 20, 50, None]},
-            {'min_impurity_decrease': [0, 0.25, 0.5],
-            'max_features': [3, 5, 10, 20, 50, 'auto']},
-            {'C':[0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000],
-            'gamma':[0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1, 1, 10, 100]},
-            {'n_neighbors': [2, 5, 10, 15, 20, 50, 100],
-            'algorithm': ['auto', 'brute']}
+            'max_features': [3, 5, 10, 15, 20, 50, None]}
             ]
 
     # Run for loop to find best parameters for each model
@@ -83,47 +77,16 @@ def main():
     preliminary_matrix = prelim_matrix.rename(columns={0:"Predicted no autism", 1:'Predicted autism'}, 
                 index={0:"Does not have autism", 1:'Has autism'})
 
-    preliminary_matrix.to_csv(conf1)
-
-    #print(classification_report(y_test, dt.predict(X_test)))
-
-
-
     # Try all questions:
     dt3 = DecisionTreeClassifier()
 
-    dt3.fit(questions_train_df, y_train)
+    dt3.fit(train_X, y_train)
 
     conf_matrix = pd.DataFrame(confusion_matrix(y_test, dt.predict(X_test)))
 
     final_matrix = conf_matrix.rename(columns={0:"Predicted no autism", 1:'Predicted autism'}, 
                 index={0:"Does not have autism", 1:'Has autism'})
 
-    final_matrix.to_csv(conf2)
-
-    # ROC curve
-
-    fpr, tpr, _ = roc_curve(y_test, dt.predict_proba(X_test)[:,1])
-
-    roc_df = pd.DataFrame({"fpr":fpr, "tpr":tpr})
-
-    line_df = pd.DataFrame({"start":[0,1], "end":[0,1]})
-
-    roc = alt.Chart(roc_df).mark_line().encode(
-        x = alt.X("fpr:Q"),
-        y = alt.Y("tpr:Q")
-    )
-        
-    line = alt.Chart(line_df).mark_line(strokeDash=[5,5], color="orange").encode(
-        x = alt.X("start:Q", axis=alt.Axis(title="False Positive Rate")),
-        y = alt.Y("end:Q", axis=alt.Axis(title="True Positive Rate"))
-    )
-        
-    chart = (roc + line).configure_axis(titleFontSize=20).properties(title="ROC Curve").configure_title(fontSize=20)
-
-    chart
-
-    chart.save(roc_path)
 
 if __name__ == "__main__":
   main()

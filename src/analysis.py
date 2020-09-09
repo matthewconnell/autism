@@ -1,4 +1,3 @@
-# analysis.py : take train/test csvs and fit a Decision tree model.
 # author: Matthew Connell
 # date: August 2020
 
@@ -8,6 +7,8 @@ import numpy as np
 # Preprocessing
 from sklearn.preprocessing import StandardScaler, OneHotEncoder, LabelEncoder, PolynomialFeatures
 from sklearn.compose import ColumnTransformer
+
+from preprocess import preprocess
 
 # Models
 from sklearn.tree import DecisionTreeClassifier
@@ -23,9 +24,7 @@ from sklearn.pipeline import Pipeline
 import warnings
 from sklearn.exceptions import FitFailedWarning
 
-from preprocess import *
-
-def analysis():
+def analysis(train_X, test_X, train_y, test_y):
 
     X_train, X_test, X_valid, y_train, y_test, y_valid = preprocess(train_X, test_X, train_y, test_y)
 
@@ -65,24 +64,23 @@ def analysis():
     # and precision = 0.46
 
     dt = DecisionTreeClassifier(max_depth=15, max_features=50)
-    dt.fit(X_train, y_train).score(X_train, y_train)
+    dt.fit(X_train, y_train)
 
-    dt.score(X_valid, y_valid)
+    print(dt.score(X_train, y_train))
+
+    print(dt.score(X_valid, y_valid))
 
     # and ~81% on the validation set
 
-    prelim_matrix = pd.DataFrame(confusion_matrix(y_valid, dt.predict(X_valid)))
+    # prelim_matrix = pd.DataFrame(confusion_matrix(y_valid, dt.predict(X_valid)))
 
 
-    preliminary_matrix = prelim_matrix.rename(columns={0:"Predicted no autism", 1:'Predicted autism'}, 
-                index={0:"Does not have autism", 1:'Has autism'})
-
-    # Try all questions:
-    dt3 = DecisionTreeClassifier()
-
-    dt3.fit(train_X, y_train)
+    # preliminary_matrix = prelim_matrix.rename(columns={0:"Predicted no autism", 1:'Predicted autism'}, 
+    #             index={0:"Does not have autism", 1:'Has autism'})
 
     conf_matrix = pd.DataFrame(confusion_matrix(y_test, dt.predict(X_test)))
 
     final_matrix = conf_matrix.rename(columns={0:"Predicted no autism", 1:'Predicted autism'}, 
                 index={0:"Does not have autism", 1:'Has autism'})
+
+    print(final_matrix)

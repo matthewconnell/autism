@@ -10,8 +10,8 @@ test_y = clean_path + 'ytest.csv'
 
 def main():
 
-    preprocess(train_X, test_X, train_y, test_y)
-    analysis()
+    # preprocess(train_X, test_X, train_y, test_y)
+    analysis(train_X, test_X, train_y, test_y)
 
 if __name__ == "__main__":
     main()

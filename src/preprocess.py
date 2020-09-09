@@ -6,13 +6,6 @@ from sklearn.preprocessing import StandardScaler, OneHotEncoder, LabelEncoder, P
 from sklearn.compose import ColumnTransformer
 from sklearn.model_selection import train_test_split
 
-clean_path = '../data/clean-data/'
-
-train_X = clean_path + 'Xtrain.csv'
-train_y = clean_path + 'ytrain.csv'
-test_X = clean_path + 'Xtest.csv'
-test_y = clean_path + 'ytest.csv'
-
 def preprocess(train_X, test_X, train_y, test_y):
 
     np.random.RandomState(414)
